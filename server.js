@@ -1,13 +1,36 @@
 const express = require("express");
+const config = require("./config/env");
+const { notFound, errorHandler } = require("./middleware/errorHandler");
 
 const app = express();
-const SERVER_PORT = 3000;
+
+// Application-level middleware: print every request
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.originalUrl}`);
+  next();
+});
+
+// Parse JSON request bodies (and cap the size)
+app.use(express.json({ limit: "10kb" }));
 
 // http://localhost:3000/
 app.get("/", (req, res) => {
   res.send("<h1>Employee API is running</h1>");
 });
 
-app.listen(SERVER_PORT, () => {
-  console.log(`Server is running on http://localhost:${SERVER_PORT}/`);
+// http://localhost:3000/health
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    service: "comp3123-assignment1-api",
+    uptimeSeconds: Math.round(process.uptime()),
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.use(notFound);
+app.use(errorHandler);
+
+app.listen(config.serverPort, () => {
+  console.log(`Server is running on http://localhost:${config.serverPort}/`);
 });
