@@ -21,12 +21,9 @@ exports.getAllEmployees = (req, res) => {
 
 // POST /api/v1/emp/employees -> 201
 exports.createEmployee = (req, res) => {
-  const { first_name, last_name, email, position, salary, date_of_joining, department } = req.body || {};
   const now = new Date();
-  const employee = {
-    _id: newId(), first_name, last_name, email, position, salary, date_of_joining, department,
-    created_at: now, updated_at: now,
-  };
+  // req.validated only contains the fields that passed validation (see middleware/validate.js)
+  const employee = Object.assign({ _id: newId(), created_at: now, updated_at: now }, req.validated);
   employees.push(employee);
   res.status(201).json(employee);
 };
@@ -38,11 +35,11 @@ exports.getEmployeeById = (req, res) => {
 
 // PUT /api/v1/emp/employees/:eid -> 200
 exports.updateEmployee = (req, res) => {
+  if (Object.keys(req.validated).length === 0) {
+    throw httpError(400, "Provide at least one employee field to update.");
+  }
   const employee = findEmployee(req.params.eid);
-  const fields = ["first_name", "last_name", "email", "position", "salary", "date_of_joining", "department"];
-  fields.forEach((field) => {
-    if (req.body && req.body[field] !== undefined) employee[field] = req.body[field];
-  });
+  Object.assign(employee, req.validated); // only whitelisted, validated fields
   employee.updated_at = new Date();
   res.status(200).json(employee);
 };
