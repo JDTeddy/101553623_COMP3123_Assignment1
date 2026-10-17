@@ -1,6 +1,7 @@
 const express = require("express");
 const config = require("./config/env");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
+const employeeRoutes = require("./routes/employee");
 
 const app = express();
 
@@ -27,6 +28,9 @@ app.get("/health", (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+// Employee routes: /api/v1/emp/employees
+app.use("/api/v1/emp", employeeRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
