@@ -1,5 +1,7 @@
+const mongoose = require("mongoose");
 const express = require("express");
 const config = require("./config/env");
+const connectDB = require("./config/db");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
 const employeeRoutes = require("./routes/employee");
 
@@ -21,11 +23,13 @@ app.get("/", (req, res) => {
 
 // http://localhost:3000/health
 app.get("/health", (req, res) => {
+  const dbStates = ["disconnected", "connected", "connecting", "disconnecting"];
   res.status(200).json({
     status: "ok",
     service: "comp3123-assignment1-api",
     uptimeSeconds: Math.round(process.uptime()),
     timestamp: new Date().toISOString(),
+    database: dbStates[mongoose.connection.readyState] || "unknown",
   });
 });
 
@@ -35,6 +39,14 @@ app.use("/api/v1/emp", employeeRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(config.serverPort, () => {
-  console.log(`Server is running on http://localhost:${config.serverPort}/`);
-});
+// Connect to MongoDB first, THEN start accepting requests
+connectDB()
+  .then(() => {
+    app.listen(config.serverPort, () => {
+      console.log(`Server is running on http://localhost:${config.serverPort}/`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to MongoDB:", err.message);
+    process.exit(1);
+  });
