@@ -16,6 +16,8 @@ const employeeSchema = new mongoose.Schema(
     salary: { type: Number, required: true, min: [0.01, "Salary must be positive"] },
     date_of_joining: { type: Date, required: true },
     department: { type: String, required: true, trim: true, maxlength: 100 },
+    // Ownership: a reference to the User who created this employee (like a foreign key)
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
   },
   {
     // Mongoose fills in created_at and updated_at for us (Week 6 used { timestamps: true })
@@ -23,5 +25,7 @@ const employeeSchema = new mongoose.Schema(
     versionKey: false, // hides the internal __v field
   }
 );
+
+employeeSchema.index({ user: 1, email: 1 }, { unique: true });
 
 module.exports = mongoose.model("Employee", employeeSchema);
