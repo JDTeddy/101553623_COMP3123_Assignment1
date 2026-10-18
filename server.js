@@ -1,12 +1,17 @@
-const mongoose = require("mongoose");
 const express = require("express");
+const helmet = require("helmet");
+const mongoose = require("mongoose");
 const config = require("./config/env");
 const connectDB = require("./config/db");
+const { apiLimiter } = require("./middleware/rateLimiters");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
 const userRoutes = require("./routes/user");
 const employeeRoutes = require("./routes/employee");
 
 const app = express();
+
+// Helmet adds security-related HTTP headers
+app.use(helmet());
 
 // Application-level middleware: print every request
 app.use((req, res, next) => {
@@ -34,11 +39,16 @@ app.get("/health", (req, res) => {
   });
 });
 
-// User routes: /api/v1/user/signup (and /login in the next commit)
+// General rate limit for everything under /api (the health check above is NOT limited)
+app.use("/api", apiLimiter);
+
+// User routes: /api/v1/user/signup and /login
 app.use("/api/v1/user", userRoutes);
+
 // Employee routes: /api/v1/emp/employees
 app.use("/api/v1/emp", employeeRoutes);
 
+// These two MUST stay last
 app.use(notFound);
 app.use(errorHandler);
 
