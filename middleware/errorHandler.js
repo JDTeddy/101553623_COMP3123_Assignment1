@@ -20,6 +20,20 @@ exports.errorHandler = (err, req, res, next) => {
   } else if (err.type === "entity.too.large") {
     status = 413;
     message = "Request body is too large.";
+  } else if (err.name === "ValidationError" && err.errors && !Array.isArray(err.errors)) {
+    // Mongoose schema validation failed
+    status = 400;
+    message = "Validation failed";
+    errors = Object.values(err.errors).map((e) => ({ field: e.path, message: e.message }));
+  } else if (err.name === "CastError") {
+    // e.g. a value that cannot be converted to an ObjectId
+    status = 400;
+    message = `Invalid value for ${err.path}.`;
+  } else if (err.code === 11000) {
+    // MongoDB duplicate key: a unique index was violated
+    const field = Object.keys(err.keyPattern || {}).filter((key) => key !== "user")[0] || "field";
+    status = 409;
+    message = `A record with this ${field} already exists.`;
   }
 
   if (status >= 500) {
