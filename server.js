@@ -3,6 +3,7 @@ const express = require("express");
 const config = require("./config/env");
 const connectDB = require("./config/db");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
+const userRoutes = require("./routes/user");
 const employeeRoutes = require("./routes/employee");
 
 const app = express();
@@ -33,6 +34,8 @@ app.get("/health", (req, res) => {
   });
 });
 
+// User routes: /api/v1/user/signup (and /login in the next commit)
+app.use("/api/v1/user", userRoutes);
 // Employee routes: /api/v1/emp/employees
 app.use("/api/v1/emp", employeeRoutes);
 
