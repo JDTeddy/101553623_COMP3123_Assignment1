@@ -1,8 +1,9 @@
 const rateLimit = require("express-rate-limit");
 const config = require("../config/env");
+const logger = require("../utils/logger");
 
-// What to send when a client goes over the limit (same shape as our other errors)
-const handler = (req, res) => {
+const makeHandler = (name) => (req, res) => {
+  logger.warn("rate_limit.exceeded", { limiter: name, method: req.method, path: req.originalUrl, ip: req.ip });
   res.status(429).json({
     status: false,
     error: true,
@@ -12,17 +13,15 @@ const handler = (req, res) => {
   });
 };
 
-const makeLimiter = (limit) =>
+const makeLimiter = (name, limit) =>
   rateLimit({
     windowMs: config.rateLimitWindowMs,
     limit: limit,
-    standardHeaders: "draft-7", // sends RateLimit-* headers so clients can see their quota
+    standardHeaders: "draft-7",
     legacyHeaders: false,
-    handler: handler,
+    handler: makeHandler(name),
   });
 
-// Strict limits on credential endpoints (brute-force / account-spam protection). Each has its own counter.
-exports.signupLimiter = makeLimiter(config.authRateLimitMax);
-exports.loginLimiter = makeLimiter(config.authRateLimitMax);
-// Looser limit for all other API traffic
-exports.apiLimiter = makeLimiter(config.apiRateLimitMax);
+exports.signupLimiter = makeLimiter("signup", config.authRateLimitMax);
+exports.loginLimiter = makeLimiter("login", config.authRateLimitMax);
+exports.apiLimiter = makeLimiter("api", config.apiRateLimitMax);

@@ -7,6 +7,8 @@ const { apiLimiter } = require("./middleware/rateLimiters");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
 const userRoutes = require("./routes/user");
 const employeeRoutes = require("./routes/employee");
+const logger = require("./utils/logger");
+const requestLogger = require("./middleware/requestLogger");
 
 const app = express();
 
@@ -14,10 +16,7 @@ const app = express();
 app.use(helmet());
 
 // Application-level middleware: print every request
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.originalUrl}`);
-  next();
-});
+app.use(requestLogger);
 
 // Parse JSON request bodies (and cap the size)
 app.use(express.json({ limit: "10kb" }));
@@ -56,10 +55,10 @@ app.use(errorHandler);
 connectDB()
   .then(() => {
     app.listen(config.serverPort, () => {
-      console.log(`Server is running on http://localhost:${config.serverPort}/`);
+      logger.info("server.started", { port: config.serverPort });
     });
   })
   .catch((err) => {
-    console.error("Failed to connect to MongoDB:", err.message);
+    logger.error("server.start_failed", { message: err.message });
     process.exit(1);
   });

@@ -1,4 +1,5 @@
 const httpError = require("../utils/httpError");
+const logger = require("../utils/logger");
 
 // Runs when no route matched: create a 404 error and pass it on to the error handler.
 exports.notFound = (req, res, next) => {
@@ -37,7 +38,7 @@ exports.errorHandler = (err, req, res, next) => {
   }
 
   if (status >= 500) {
-    console.error(err); // full details stay on the server...
+    logger.error("error.unhandled", { method: req.method, path: req.originalUrl, message: err.message, stack: err.stack });
     message = "Something went wrong on our side."; // ...and are never sent to the client
   }
 

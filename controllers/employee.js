@@ -1,5 +1,6 @@
 const Employee = require("../models/employee");
 const httpError = require("../utils/httpError");
+const logger = require("../utils/logger");
 
 /*
  OWNERSHIP ENFORCEMENT
@@ -15,6 +16,7 @@ async function findOwnedEmployee(eid, req) {
   if (employee) return employee;
 
   if (await Employee.exists({ _id: eid })) {
+    logger.warn("authz.employee.forbidden", { userId: String(req.user._id), employeeId: eid, method: req.method, ip: req.ip });
     throw httpError(403, "You do not have permission to access this employee.");
   }
   throw httpError(404, "Employee not found.");
@@ -37,6 +39,7 @@ exports.createEmployee = async (req, res, next) => {
     // The owner comes from the verified token (req.user), NEVER from the request body
     employee.user = req.user._id;
     const savedEmployee = await employee.save();
+    logger.info("employee.created", { userId: String(req.user._id), employeeId: String(savedEmployee._id) });
     res.status(201).json(savedEmployee);
   } catch (err) {
     next(err);
@@ -62,6 +65,7 @@ exports.updateEmployee = async (req, res, next) => {
     const employee = await findOwnedEmployee(req.params.eid, req);
     employee.set(req.validated); // only whitelisted fields, so "user" can never be reassigned
     const savedEmployee = await employee.save();
+    logger.info("employee.updated", { userId: String(req.user._id), employeeId: String(savedEmployee._id) });
     res.status(200).json(savedEmployee);
   } catch (err) {
     next(err);
@@ -73,6 +77,7 @@ exports.deleteEmployee = async (req, res, next) => {
   try {
     const employee = await findOwnedEmployee(req.query.eid, req);
     await employee.deleteOne();
+    logger.info("employee.deleted", { userId: String(req.user._id), employeeId: String(employee._id) });
     res.status(204).send();
   } catch (err) {
     next(err);

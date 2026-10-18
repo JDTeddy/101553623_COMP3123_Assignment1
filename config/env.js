@@ -26,4 +26,5 @@ module.exports = {
   rateLimitWindowMs: toNumber(process.env.RATE_LIMIT_WINDOW_MS, 15 * 60 * 1000),
   authRateLimitMax: toNumber(process.env.AUTH_RATE_LIMIT_MAX, 10),
   apiRateLimitMax: toNumber(process.env.API_RATE_LIMIT_MAX, 100),
+  logDir: process.env.LOG_DIR || "logs",
 };
