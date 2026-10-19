@@ -24,35 +24,43 @@ A secure RESTful backend for managing employees where people sign up and log in.
 
 ```
 101553623_COMP3123_Assignment1/
-├── server.js                  # App setup, middleware order, route mounting, startup
-├── config/
-│   ├── env.js                 # Reads and checks environment variables
-│   └── db.js                  # Mongoose connection
-├── routes/
-│   ├── user.js                # /api/v1/user/signup, /login
-│   └── employee.js            # /api/v1/emp/employees...
-├── controllers/
-│   ├── user.js                # signup, login
-│   └── employee.js            # CRUD + ownership checks
-├── models/
-│   ├── user.js
-│   └── employee.js
-├── middleware/
-│   ├── auth.js                # JWT authentication
-│   ├── validate.js            # Turns validator results into 400 errors
-│   ├── rateLimiters.js        # signup / login / general API limiters
-│   ├── requestLogger.js       # One log line per request
-│   └── errorHandler.js        # 404 handler + central error handler
-├── validators/
-│   ├── user.js
-│   └── employee.js
-├── utils/
-│   ├── httpError.js           # Error with an HTTP status code
-│   └── logger.js              # File + console logger
-├── logs/                      # Generated log files (not committed)
-├── postman/                   # Exported Postman collection
-├── .env.example
-└── .gitignore
+├── server.js         
+├── package.json
+├── package-lock.json
+├── .env            
+├── .env.example             
+├── .gitignore
+├── README.md
+├── src/
+│   ├── config/
+│   │   ├── env.js     
+│   │   └── db.js   
+│   ├── models/
+│   │   ├── user.js
+│   │   └── employee.js
+│   ├── routes/
+│   │   ├── user.js           
+│   │   └── employee.js
+│   ├── controllers/
+│   │   ├── user.js            
+│   │   └── employee.js        
+│   ├── middleware/
+│   │   ├── auth.js            
+│   │   ├── validate.js        
+│   │   ├── rateLimiters.js
+│   │   ├── requestLogger.js
+│   │   └── errorHandler.js    
+│   ├── validators/
+│   │   ├── user.js            
+│   │   └── employee.js
+│   └── utils/
+│       ├── logger.js          
+│       └── httpError.js       
+├── logs/
+│   ├── .gitkeep
+│   └── sample.log
+└── postman/
+    └── (your exported collection)
 ```
 
 ## 2. Installation
