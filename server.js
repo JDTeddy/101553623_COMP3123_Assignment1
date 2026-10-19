@@ -1,14 +1,14 @@
 const express = require("express");
 const helmet = require("helmet");
 const mongoose = require("mongoose");
-const config = require("./config/env");
-const connectDB = require("./config/db");
-const { apiLimiter } = require("./middleware/rateLimiters");
-const { notFound, errorHandler } = require("./middleware/errorHandler");
-const userRoutes = require("./routes/user");
-const employeeRoutes = require("./routes/employee");
-const logger = require("./utils/logger");
-const requestLogger = require("./middleware/requestLogger");
+const config = require("./src/config/env");
+const connectDB = require("./src/config/db");
+const { apiLimiter } = require("./src/middleware/rateLimiters");
+const { notFound, errorHandler } = require("./src/middleware/errorHandler");
+const userRoutes = require("./src/routes/user");
+const employeeRoutes = require("./src/routes/employee");
+const logger = require("./src/utils/logger");
+const requestLogger = require("./src/middleware/requestLogger");
 
 const app = express();
 
