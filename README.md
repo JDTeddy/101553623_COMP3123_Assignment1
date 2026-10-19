@@ -108,7 +108,7 @@ npm run dev # restarts automatically on file changes (nodemon)
 | `API_RATE_LIMIT_MAX` | No | `100` | Max requests per window for all other `/api` routes |
 | `LOG_DIR` | No | `logs` | Folder for log files |
 
-The server will refuse to start if mongodb_uri or the jwt_secret is missing, or if the jwt_secret is shorter tham 32 characters.
+The server will refuse to start if mongodb_uri or the jwt_secret is missing, or if the jwt_secret is shorter than 32 characters.
 
 ## 4. API
 
@@ -124,6 +124,40 @@ Base paths: `/api/v1/user` and `/api/v1/emp`. All request and response bodies ar
 | 6 | PUT | `/api/v1/emp/employees/{eid}` | Yes | `200` |
 | 7 | DELETE | `/api/v1/emp/employees?eid=xxx` | Yes | `204` (empty body) |
 | – | GET | `/health` | No | `200` |
+
+#### Signup
+Rules:
+- username 3–30 characters (letters, numbers, underscore)
+- valid email
+- password 8–72 characters with an uppercase letter, a lowercase letter and a number.
+- Username and email are stored in lowercase and must be unique
+
+```json
+{ "username": "alice_01", "email": "alice@example.com", "password": "Passw0rdA1" }
+```
+
+#### Login
+use (username or email) + password:
+
+```json
+{ "username": "alice_01", "password": "Passw0rdA1" }
+{ "email": "alice@example.com", "password": "Passw0rdA1" }
+```
+
+#### Employees
+Create/Update body fields:
+
+```json
+{
+  "first_name": "Ada",
+  "last_name": "Lovelace",
+  "email": "ada@example.com",
+  "position": "Engineer",
+  "salary": 85000,
+  "date_of_joining": "2025-01-15",
+  "department": "R&D"
+}
+```
 
 ## 5. Authentication
 
