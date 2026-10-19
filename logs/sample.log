@@ -1,0 +1,15 @@
+{"timestamp":"2026-10-19T22:23:05.669Z","level":"warn","event":"auth.login.failed","identifierType":"username","ip":"::1"}
+{"timestamp":"2026-10-19T22:23:05.669Z","level":"warn","event":"http.request","method":"POST","path":"/api/v1/user/login","status":401,"durationMs":28,"ip":"::1"}
+{"timestamp":"2026-10-19T22:23:06.063Z","level":"warn","event":"auth.login.failed","identifierType":"username","ip":"::1"}
+{"timestamp":"2026-10-19T22:23:06.063Z","level":"warn","event":"http.request","method":"POST","path":"/api/v1/user/login","status":401,"durationMs":26,"ip":"::1"}
+{"timestamp":"2026-10-19T22:23:06.481Z","level":"warn","event":"rate_limit.exceeded","limiter":"login","method":"POST","path":"/api/v1/user/login","ip":"::1"}
+{"timestamp":"2026-10-19T22:23:06.481Z","level":"warn","event":"http.request","method":"POST","path":"/api/v1/user/login","status":429,"durationMs":1,"ip":"::1"}
+{"timestamp":"2026-10-19T22:23:06.905Z","level":"warn","event":"rate_limit.exceeded","limiter":"login","method":"POST","path":"/api/v1/user/login","ip":"::1"}
+{"timestamp":"2026-10-19T22:23:06.905Z","level":"warn","event":"http.request","method":"POST","path":"/api/v1/user/login","status":429,"durationMs":0,"ip":"::1"}
+{"timestamp":"2026-10-19T22:23:07.347Z","level":"warn","event":"rate_limit.exceeded","limiter":"login","method":"POST","path":"/api/v1/user/login","ip":"::1"}
+{"timestamp":"2026-10-19T22:23:07.348Z","level":"warn","event":"http.request","method":"POST","path":"/api/v1/user/login","status":429,"durationMs":1,"ip":"::1"}
+{"timestamp":"2026-10-19T22:23:54.724Z","level":"warn","event":"validation.failed","method":"POST","path":"/api/v1/user/signup","fields":["username","email","password"]}
+{"timestamp":"2026-10-19T22:23:54.725Z","level":"warn","event":"http.request","method":"POST","path":"/api/v1/user/signup","status":400,"durationMs":2,"ip":"::1"}
+{"timestamp":"2026-10-19T22:24:22.683Z","level":"info","event":"http.request","method":"GET","path":"/health","status":200,"durationMs":1,"ip":"::1"}
+{"timestamp":"2026-10-19T22:30:55.516Z","level":"info","event":"database.connected","name":"comp3123_assignment1"}
+{"timestamp":"2026-10-19T22:30:55.520Z","level":"info","event":"server.started","port":"3000"}

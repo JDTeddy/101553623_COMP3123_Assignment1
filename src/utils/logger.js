@@ -3,7 +3,7 @@ const path = require("path");
 const config = require("../config/env");
 
 // The log files live in the "logs" folder in the project root
-const LOG_DIR = path.resolve(__dirname, "..", config.logDir);
+const LOG_DIR = path.resolve(__dirname, "..", "..", config.logDir);
 fs.mkdirSync(LOG_DIR, { recursive: true });
 
 const APP_LOG = path.join(LOG_DIR, "app.log"); // every event
