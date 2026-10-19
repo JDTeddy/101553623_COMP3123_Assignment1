@@ -253,3 +253,10 @@ GET http://localhost:3000/health (no authentication, not rate limited):
   "database": "connected"
 }
 ```
+
+## Sample credentials for marking
+ 
+| Username | Email | Password |
+| --- | --- | --- |
+| `alice_01` | `alice@example.com` | `Passw0rdA1` |
+| `bob_02` | `bob@example.com` | `Passw0rdB2` |
