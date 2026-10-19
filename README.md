@@ -1,9 +1,11 @@
-Name: Jared-Ian Duldulao
-Student ID: 101553623
-Course: COMP3123 - Full Stack Development I
-==================================================================
+# COMP 3123 – Assignment 1
+ 
+**Student:** Jared-Ian Duldulao (101553623)
+**Course:** COMP 3123 – Full Stack Development I
 
-## Project
+---
+
+## 1. Project
 
 #### Purpose
 A secure RESTful backend for managing employees where people sign up and log in. They receive a JSON Web Token (JWT), and use it to create and manage their own employees. Every employee belongs to the user who created it, and no user can see, change or delete another user's employees.
@@ -20,6 +22,7 @@ A secure RESTful backend for managing employees where people sign up and log in.
 
 #### Project Structure
 
+```
 101553623_COMP3123_Assignment1/
 ├── server.js                  # App setup, middleware order, route mounting, startup
 ├── config/
@@ -50,35 +53,49 @@ A secure RESTful backend for managing employees where people sign up and log in.
 ├── postman/                   # Exported Postman collection
 ├── .env.example
 └── .gitignore
+```
 
-## Installation
+## 2. Installation
 
 #### Clone the repository
 find a root/area to clone
-type command "  git clone https://github.com/JDTeddy/101553623_COMP3123_Assignment1.git  "
-then type command "  cd 101553623_COMP3123_Assignment1  "
 
+```bash
+git clone https://github.com/JDTeddy/101553623_COMP3123_Assignment1.git
+cd 101553623_COMP3123_Assignment1
+```
 #### Install dependencies
-type command "  npm install  "
+
+```bash
+npm install
+```
 
 #### Configure environment variables
-type command "  cp .env.example .env  "
-then type command "  node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"  "
+
+```bash
+cp .env.example .env
+node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+```
 
 #### Start MongoDB
-can use local mongodb compass or atlas connection string in MONGODB_URI.
+Use local mongodb compass or atlas connection string in MONGODB_URI.
 The database will automatically be created the first time data is saved.
 
 #### Start the application
-type command "npm start" production-style
-or type command "npm run dev" restarts automatically on file changes (nodemon)
+
+```bash
+npm start # production-style
+npm run dev # restarts automatically on file changes (nodemon)
+```
 
 #### Test the API
 1. API runs at http://localhost:3000
+
 2. you can Open http://localhost:3000/health (should show "status": "ok").
+
 3. Import postman/<collection-file>.json into Postman, set the collection variable baseUrl to http://localhost:3000, and run the folders in order. Restart the server before re-running the collection so the rate-limit counters reset.
 
-## Configuration
+## 3. Configuration
 
 | Variable | Required | Default | Description |
 | --- | --- | --- | --- |
@@ -93,7 +110,7 @@ or type command "npm run dev" restarts automatically on file changes (nodemon)
 
 The server will refuse to start if mongodb_uri or the jwt_secret is missing, or if the jwt_secret is shorter tham 32 characters.
 
-## API
+## 4. API
 
 Base paths: `/api/v1/user` and `/api/v1/emp`. All request and response bodies are JSON.
 
@@ -108,7 +125,7 @@ Base paths: `/api/v1/user` and `/api/v1/emp`. All request and response bodies ar
 | 7 | DELETE | `/api/v1/emp/employees?eid=xxx` | Yes | `204` (empty body) |
 | – | GET | `/health` | No | `200` |
 
-## Authentication
+## 5. Authentication
 
 #### Signup 
 creates the user. The password is hashed with bcrypt before saving.
@@ -126,17 +143,21 @@ The authentication middleware (middleware/auth.js) verifies the signature and ex
 all three-through-seven employee endpoints (/api/v1/emp/...). Signup, login and /health are public.
 Wrong username and wrong password return the same 401 Invalid credentials. message, so an attacker cannot discover which usernames exist.
 
-## Authorization (users only access their own employees)
+## 6. Authorization (users only access their own employees)
 
 Each employee document has a user field: an ObjectId that references the users collection (ref: "User"). It answers "which user owns this employee?".
 
 - On create, user is set from req.user._id, which comes from the verified JWT. The field is not accepted from the request body, and the validators discard any unexpected fields (such as user or isAdmin).
+
 - On list, the query is Employee.find({ user: req.user._id }), so only the caller's employees come back.
+
 - On get / update / delete, the query is Employee.findOne({ _id: eid, user: req.user._id }). The owner is part of the database query itself, so changing eid in the URL or query string can never load another user's document.
+
 - If that query finds nothing, a second lookup only chooses the error: the employee exists but belongs to someone else → 403; it does not exist → 404.
+
 - A compound unique index on { user, email } stops one owner from adding two employees with the same email, while different owners may use the same email.
 
-## Security
+## 7. Security
 
 #### Password hashing
 Passwords are hashed with bcrypt (bcryptjs, cost factor 12, random salt per password) before being saved. Plain-text passwords are never stored or logged. The password field has select: false (queries do not return it) and the User model's toJSON removes it from any JSON output.
@@ -162,7 +183,7 @@ Secrets (MONGODB_URI, JWT_SECRET) are read from environment variables, never har
 #### Error handling
 Controllers pass errors to next(err). A single error-handling middleware converts everything (validation errors, duplicate keys, bad ObjectIds, unknown routes, unexpected errors) into the JSON format shown above. For 500 errors the client only sees a generic message; the stack trace goes to the log file.
 
-## Logging
+## 8. Logging
 
 #### Where
 logs/app.log (every event) and logs/error.log (errors only). Events are also printed to the console. Each line is one JSON object. The generated *.log files are excluded by .gitignore; logs/sample-app.log.example shows real example lines.
@@ -185,7 +206,7 @@ logs/app.log (every event) and logs/error.log (errors only). Events are also pri
 - database credentials
 - request bodies and request headers. (Validation failures log only the names of the failing fields, never their values)
 
-## Health check
+## 9. Health check
 
 GET http://localhost:3000/health (no authentication, not rate limited):
 
