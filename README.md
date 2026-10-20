@@ -201,29 +201,26 @@ Each employee document has a user field: an ObjectId that references the users c
 
 ## 7. Security
 
-#### Password hashing
-Passwords are hashed with bcrypt (bcryptjs, cost factor 12, random salt per password) before being saved. Plain-text passwords are never stored or logged. The password field has select: false (queries do not return it) and the User model's toJSON removes it from any JSON output.
+#### Password hashing:
+Passwords are hashed with bcrypt (bcryptjs, cost 12, random salt) before saving. The password field is hidden from queries and removed from all JSON output.
 
-#### JWT
-Tokens are signed with HS256 using JWT_SECRET and verified with the algorithm pinned to HS256. The payload carries only the user id. The user's identity always comes from the verified token, never from the request body or URL.
+#### JWT 
+Tokens are signed and verified with HS256 using `JWT_SECRET` and contain only the user id. The user's identity always comes from the verified token, never from the request body or URL.
 
 #### Helmet
-Helmet is applied to every response and sets security headers such as X-Content-Type-Options: nosniff (stops MIME sniffing), X-Frame-Options (blocks clickjacking), Strict-Transport-Security (forces HTTPS) and Content-Security-Policy (limits where content may load from). It also removes the X-Powered-By: Express header so the framework is not advertised.
+Adds standard security headers to every response and removes the `X-Powered-By` header.
 
 #### Rate limiting
-What it is: rate limiting caps how many requests one client (identified by IP address) may send in a time window. It slows brute-force password guessing and account-creation spam.
-
-#### When the limit is exceeded
-the server answers 429 Too Many Requests with the standard JSON error body ("message": "Too many requests. Please try again later.") and sends RateLimit-* headers showing the quota. Counters are kept in memory, so restarting the server resets them. The limits are configurable through .env.
+Limits requests per IP address to slow brute-force logins and signup spam. When the limit is exceeded, the server returns `429` with `"Too many requests. Please try again later."`. Counters are in memory, so a restart resets them. Limits are set in `.env`.
 
 #### Input validation
-express-validator rule chains run before each controller. They check required fields, types, string lengths, email format, positive numeric salary, ISO 8601 dates and MongoDB ObjectIds (both in the URL and in ?eid=). Values are sanitized (trimmed, emails lowercased, salary converted to a number, date converted to a Date). The validate middleware returns 400 with a list of field errors, or passes only the whitelisted, validated fields to the controller. Using isString() also blocks NoSQL-injection payloads such as { "$gt": "" }. Mongoose schema rules provide a second layer. JSON bodies are limited to 10 KB and malformed JSON returns 400.
+express-validator checks and sanitizes every request (required fields, types, lengths, email format, salary, dates, ObjectIds) before it reaches a controller. Invalid requests return `400` with the failing fields, and unexpected fields are discarded. `isString()` also blocks NoSQL-injection payloads like `{ "$gt": "" }`. JSON bodies are limited to 10 KB, and Mongoose schema rules add a second layer of checks.
 
 #### Environment variables
-Secrets (MONGODB_URI, JWT_SECRET) are read from environment variables, never hard-coded. .env is listed in .gitignore, and .env.example contains only placeholders. The server exits at startup if required settings are missing.
+ Secrets (`MONGODB_URI`, `JWT_SECRET`) come from `.env`, which is git-ignored. `.env.example` has placeholders only. The server exits at startup if required settings are missing.
 
 #### Error handling
-Controllers pass errors to next(err). A single error-handling middleware converts everything (validation errors, duplicate keys, bad ObjectIds, unknown routes, unexpected errors) into the JSON format shown above. For 500 errors the client only sees a generic message; the stack trace goes to the log file.
+All errors go through one middleware that returns a consistent JSON response. For `500` errors the client sees a generic message, and the stack trace goes only to the log.
 
 ## 8. Logging
 
